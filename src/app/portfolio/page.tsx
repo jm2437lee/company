@@ -1,10 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Portfolio() {
   const [selectedCategory, setSelectedCategory] = useState("전체");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedTitle, setSelectedTitle] = useState<string>("");
+
+  // ESC 키로 모달 닫기
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && selectedImage) {
+        setSelectedImage(null);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [selectedImage]);
 
   const portfolioItems = [
     {
@@ -14,8 +30,7 @@ export default function Portfolio() {
       description:
         "프리미엄 브랜드의 정체성을 완벽하게 반영한 고급스러운 웹사이트",
       tech: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
-      image:
-        "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&h=600&fit=crop&crop=center",
+      image: "/portfolio/p_01.png",
       gradient: "from-purple-600 to-pink-600",
       year: "2025",
     },
@@ -25,8 +40,7 @@ export default function Portfolio() {
       category: "포트폴리오",
       description: "개인 브랜딩을 극대화한 인터랙티브 포트폴리오 사이트",
       tech: ["React", "Three.js", "GSAP", "Styled Components"],
-      image:
-        "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=600&fit=crop&crop=center",
+      image: "/portfolio/p_02.png",
       gradient: "from-cyan-500 to-blue-600",
       year: "2025",
     },
@@ -36,8 +50,7 @@ export default function Portfolio() {
       category: "랜딩페이지",
       description: "전환율 최적화에 특화된 고성능 마케팅 랜딩페이지",
       tech: ["Vue.js", "Nuxt.js", "SCSS", "AOS"],
-      image:
-        "https://images.unsplash.com/photo-1559028006-448665bd7c7f?w=800&h=600&fit=crop&crop=center",
+      image: "/portfolio/p_03.png",
       gradient: "from-green-500 to-teal-600",
       year: "2025",
     },
@@ -47,8 +60,7 @@ export default function Portfolio() {
       category: "기업 웹사이트",
       description: "사용자 경험을 중심으로 설계된 모던 쇼핑몰 플랫폼",
       tech: ["React", "Node.js", "MongoDB", "Stripe"],
-      image:
-        "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=600&fit=crop&crop=center",
+      image: "/portfolio/p_04.png",
       gradient: "from-orange-500 to-red-600",
       year: "2024",
     },
@@ -58,8 +70,7 @@ export default function Portfolio() {
       category: "포트폴리오",
       description: "작품의 아름다움을 극대화하는 미니멀 갤러리 웹사이트",
       tech: ["Gatsby", "GraphQL", "Contentful", "Lightbox"],
-      image:
-        "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=800&h=600&fit=crop&crop=center",
+      image: "/portfolio/p_05.png",
       gradient: "from-indigo-500 to-purple-600",
       year: "2024",
     },
@@ -69,8 +80,7 @@ export default function Portfolio() {
       category: "랜딩페이지",
       description: "혁신적인 기술을 어필하는 인터랙티브 기업 사이트",
       tech: ["Next.js", "TypeScript", "Three.js", "Vercel"],
-      image:
-        "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=600&fit=crop&crop=center",
+      image: "/portfolio/p_06.png",
       gradient: "from-blue-600 to-cyan-500",
       year: "2023",
     },
@@ -209,11 +219,12 @@ export default function Portfolio() {
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 cursor-pointer"
+                      onClick={() => {
+                        setSelectedImage(item.image);
+                        setSelectedTitle(item.title);
+                      }}
                     />
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-t ${item.gradient} opacity-60`}
-                    ></div>
 
                     {/* Category Badge */}
                     <div className="absolute top-4 left-4">
@@ -343,6 +354,37 @@ export default function Portfolio() {
           <div className="absolute inset-0 bg-yellow-400 rounded-full animate-ping opacity-20"></div>
         </a>
       </div>
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-7xl max-h-full">
+            {/* Close Button */}
+            <button
+              className="absolute -top-12 right-0 text-white/80 hover:text-white text-2xl font-bold z-10 bg-black/50 rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300 hover:bg-black/70"
+              onClick={() => setSelectedImage(null)}
+            >
+              ×
+            </button>
+
+            {/* Image */}
+            <img
+              src={selectedImage}
+              alt={selectedTitle}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            {/* Title */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg">
+              <h3 className="text-white text-xl font-bold">{selectedTitle}</h3>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
